@@ -1,0 +1,52 @@
+Sub Rawdata_E67()
+Dim RD, WB As Worksheet
+Dim R1, R2 As Integer
+
+Set RD = Sheets("Rawdata")
+Set WB = Sheets("WB_E67")
+
+    'Rawdata_Format
+    R1 = RD.Range("C" & Rows.Count).End(xlUp).Row
+    
+    RD.Range("A3:CB3").Copy
+    RD.Range("A4:CB" & R1).PasteSpecial xlPasteFormats
+    'BIN_Rate
+    RD.Range("AK2:BW2").Copy
+    RD.Range("AK3:BW" & R1).PasteSpecial xlPasteFormulas
+    'Cost_ID
+    RD.Range("BZ2").Copy
+    RD.Range("BZ3:BZ" & R1).PasteSpecial xlPasteFormulas
+    'Company & Product
+    RD.Range("A2:B2").Copy
+    RD.Range("A3:B" & R1).PasteSpecial xlPasteFormulas
+    
+    RD.Columns("E").Replace _
+    What:="TENEFR", Replacement:="EFR", _
+    SearchOrder:=xlByColumns, MatchCase:=True
+    
+    'WB_E67_PriceFormula
+    R2 = WB.Cells(Rows.Count, 5).End(xlUp).Row
+    
+    'MsgBox "ROW:" & usedR
+    For i = 4 To R2
+        'WA單價
+        If WB.Cells(i, 15).Value = "TENEFRSHT" Or WB.Cells(i, 15).Value = "TENEFRLT" Then
+            WB.Cells(i, 28).Formula = "=ROUND(U" & i & "/(3600*V" & i & "/(W" & i & "+Y" & i & ")),2)"
+        ElseIf WB.Cells(i, 15).Value = "TENEFR" Then
+            WB.Cells(i, 28).Formula = "=ROUND(U" & i & "/(V" & i & "*X" & i & "/(W" & i & "+Y" & i & ")),2)"
+        End If
+    
+        '超低溫
+        If WB.Cells(i, 26).Value <= -30 Then
+            WB.Cells(i, 2).Value = "適用超低溫計價"
+        End If
+    
+        'WA總價
+        WB.Cells(i, 29).Formula = "=ROUND(AB" & i & "*T" & i & ",0)"
+    Next
+    
+    'Title
+    xTitle = Application.InputBox("請輸入帳期 YYYYMM：", Type:=1)
+    WB.Cells(1, 1).Value = xTitle & "_WB加帳-E67"
+
+End Sub
