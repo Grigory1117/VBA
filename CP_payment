@@ -1,0 +1,49 @@
+Public Sub Price()
+
+Dim UsedR As Integer
+Dim P As Worksheet
+Set P = Sheets("64P1")
+    UsedR = P.Cells(Rows.Count, 1).End(xlUp).Row
+    'MsgBox "ROW:" & UsedR
+
+    'Title Clean
+    P.Range("1:1").Replace _
+    What:=" ", Replacement:="", _
+    SearchOrder:=xlByColumns, MatchCase:=True
+
+    'Mark Drop Ship
+    For i = 1 To UsedR
+        If P.Cells(i, 6) Like "*" & "K" & "*" Then
+            P.Range(Cells(i, 1), Cells(i, 24)).Interior.Color = RGB(218, 243, 238)
+        End If
+    Next
+
+    '篩選需計價
+    Selection.AutoFilter Field:=22, Criteria1:="Chip Probing"
+    Selection.AutoFilter Field:=6, Operator:=xlFilterNoFill
+
+    'Insert新價作業欄
+    P.Columns("AO:AQ").Select
+    Selection.Insert Shift:=xlToRight
+    P.Cells(1, 41) = "NEW PRICE"
+    P.Cells(1, 42) = "NEW AMOUNT"
+    P.Cells(1, 43) = "Differ"
+
+    'Vlookup
+    P.Cells(2, 42).Formula = "=VLOOKUP(H:H,67D_Pi!A:B,2,FALSE)"
+    P.Cells(2, 41).Formula = "=ROUND(RC[1]/RC[-11],2)"
+    P.Cells(2, 43).Formula = "=RC[-1]-RC[-3]"
+    
+    P.Range(Cells(2, 41), Cells(2, 43)).Select
+    Selection.AutoFill Destination:=Range(Cells(2, 41), Cells(UsedR, 43)), Type:=xlFillDefault
+    P.Columns("AO:AP").Select
+    Selection.Style = "Comma"
+
+
+    For i = 1 To UsedR
+        If P.Cells(i, 17) = "ENGWAFER" Or P.Cells(i, 17) = "INSPMAP" Or Cells(i, 17) = "REWORKCP" Then
+            P.Cells(i, 42) = 0
+        End If
+    Next
+
+End Sub
