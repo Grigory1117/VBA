@@ -1,0 +1,88 @@
+Public Sub UnitPrice()
+
+Dim UsedR As Integer
+Dim XQ, XFT64, XFT128 As String
+Dim VBA As Worksheet
+    
+Set VBA = Sheets("VBA")
+
+    UsedR = VBA.Cells(Rows.Count, 1).End(xlUp).Row
+    MsgBox "ROW:" & UsedR
+    
+    'Data Parsing
+    VBA.Columns("O:O").Select
+    Selection.TextToColumns Destination:=VBA.Range("W1"), DataType:=xlDelimited, _
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _
+        Semicolon:=False, Comma:=False, Space:=False, Other:=True, OtherChar _
+        :=";"
+    VBA.Columns("W:AE").Delete
+    
+    '擷取Price Factor Key: TESTTIME PERSYSTEM PERCONTACT
+    VBA.Cells(2, 24).Formula = "=MID(W2,FIND(""("",W2)+1,FIND("")"",W2)-1-FIND(""("",W2))"
+    VBA.Range("X2").Select
+    Selection.AutoFill Destination:=VBA.Range(Cells(2, 24), Cells(UsedR, 24)), Type:=xlFillDefault
+    
+    'Unit Price
+    XQ = Application.InputBox("請輸入報價單：", Type:=2)
+    XFT64 = Application.InputBox("請輸入 32 Duts* 2 單價：", Type:=2)
+    XFT128 = Application.InputBox("請輸入 64 Duts* 2 單價：", Type:=2)
+    
+    For i = 2 To UsedR
+        'Assembly & Grinding(ASSY_B)
+        If VBA.Cells(i, 15) Like "BODY SIZE(150 MIL);DIE COATING(N);GOLDEN WIRE(0.7 MIL);HEAT SINK(N);LEAD FRAME TYPE(STAMPING);MATERIAL(GREEN PACKAGE);PACKAGE FORM(SOP);PACKAGE THICKNESS();PIN(8);" Then
+            VBA.Cells(i, 9).Formula = "=" & XQ & "!C3"
+        ElseIf VBA.Cells(i, 15) Like "BODY SIZE(208 MIL);DIE COATING(N);GOLDEN WIRE(0.7 MIL);HEAT SINK(N);LEAD FRAME TYPE(STAMPING);MATERIAL(GREEN PACKAGE);PACKAGE FORM(SOP);PACKAGE THICKNESS();PIN(8);" Then
+            VBA.Cells(i, 9).Formula = "=" & XQ & "!C4"
+    
+        'LEAD SCAN(DRYPACK_S)
+        ElseIf VBA.Cells(i, 5).Value = "DRYPACK_S" Then
+            VBA.Cells(i, 9).Formula = "=" & XQ & "!C8"
+        
+        'Baking(BAKING)
+        ElseIf VBA.Cells(i, 5).Value = "BAKING" And Cells(i, 15) Like "*" & " MIL);PACKAGE FORM(SOP);PIN(8);TEST TIME(6);" & "*" Then
+            VBA.Cells(i, 9).Formula = "=" & XQ & "!C9"
+        
+        ElseIf VBA.Cells(i, 5).Value = "BAKING" And Cells(i, 15) Like "*" & " MIL);PACKAGE FORM(SOP);PIN(8);TEST TIME(72);" & "*" Then
+            VBA.Cells(i, 9).Formula = "=" & XQ & "!C10"
+        
+        'T&R_S(bug)
+        ElseIf VBA.Cells(i, 5).Value = "T&R_S" And Cells(i, 4) Like "*" & "GAT" & "*" Then
+            VBA.Cells(i, 9).Formula = "=" & XQ & "!C12"
+        
+        ElseIf VBA.Cells(i, 5).Value = "T&R_S" And Cells(i, 4) Like "BTR_S" Then
+            VBA.Cells(i, 9).Formula = "=" & XQ & "!C22"
+        
+        'Tube to Tray(TRAY-C)
+        ElseIf VBA.Cells(i, 5).Value = "TRAY-C" And Cells(i, 15) Like "BODY SIZE(150 MIL);PACKAGE FORM(SOP);PIN(8);" Then
+            VBA.Cells(i, 9).Formula = "=" & XQ & "!C23"
+        
+        ElseIf VBA.Cells(i, 5).Value = "TRAY-C" And Cells(i, 15) Like "BODY SIZE(208 MIL);PACKAGE FORM(SOP);PIN(8);" Then
+            VBA.Cells(i, 9).Formula = "=" & XQ & "!C24"
+        
+        'De-Taping(DETAPE)
+        ElseIf VBA.Cells(i, 5).Value = "DETAPE" Then
+            VBA.Cells(i, 9).Formula = "=" & XQ & "!C13"
+        
+        'Testing(FT) #bug:無法對應儲存格自動帶入單價，得手動KEY單價
+        ElseIf VBA.Cells(i, 15) Like "DUTS PER SYSTEM(64);" & "*" Then
+            VBA.Cells(i, 9).Formula = "=ROUND(" & XFT64 & "/(3600*64)*(5+RC[15]),3)"
+            'Cells(i, 9).Formula = "=ROUND(" & XQ & "!C29" & "/(3600*64)*(5+RC[15]),3)"
+        
+        ElseIf VBA.Cells(i, 15) Like "DUTS PER SYSTEM(128);" & "*" Then
+            VBA.Cells(i, 9).Formula = "=ROUND(" & XFT128 & "/(3600*128)*(5+RC[15]),3)"
+            'Cells(i, 9).Formula = "=ROUND(" & XQ & "!C30" & "/(3600*128)*(5+RC[15]),3)"
+        End If
+        
+        'Payment Amt
+        VBA.Cells(i, 11).Formula = "=ROUND(RC[-2]*RC[-1],2)"
+    Next
+    
+    For j = 3 To UsedR
+        VBA.Cells(j, 11).Formula = "=ROUND(RC[-2]*RC[-1],2)"
+    Next
+    
+    'Format
+    VBA.Columns("K:K").Select
+    Selection.Style = "Comma"
+
+End Sub
