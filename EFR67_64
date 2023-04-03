@@ -1,0 +1,46 @@
+Public Sub T64G4()
+
+Dim R1, R2 As Integer
+Dim Flash, Device
+Dim H&
+Dim T As Worksheet
+
+Set T = Sheets("64G4_E67")
+
+    R1 = T.Cells(Rows.Count, 3).End(xlUp).Row
+    MsgBox "ROW:" & R1
+
+    For i = 1 To UsedR
+        'Mark EFR2367 and Rework
+        If T.Cells(i, 29) Like "*" & "E2" & "*" Or T.Cells(i, 29) Like "*" & "E6" & "*" _
+        Or T.Cells(i, 29) Like "*" & "EFR" & "*" Or T.Cells(i, 29) Like "*" & "ENG" & "*" _
+        Or T.Cells(i, 29).Value = "REWORK" Then
+            T.Range(Cells(i, 1), Cells(i, 35)).Interior.Color = RGB(217, 217, 217)
+        End If
+
+        'Mark Flash
+        Device = T.Cells(i, 9).Value
+        Flash = Mid(Device, 3, 1)
+        If Flash = "G" Then
+            T.Range(Cells(i, 1), Cells(i, 35)).Interior.Color = RGB(253, 253, 217)
+        End If
+    Next
+    
+        'Clean 64G4_E67
+        R2 = T.Cells(Rows.Count, 3).End(xlUp).Row
+        MsgBox "ROW:" & R2
+        
+    'Key
+    For i = 2 To UsedR
+        Cells(i, 2).Formula = "=RC[3]&""-""&RC[13]"
+    Next
+    
+    '排序
+    Range("A:AI").Sort Key1:=Columns("B"), Order1:=xlAscending, Header:=xlYes
+    Range("A:AI").Sort Key1:=Columns("U"), Order1:=xlDescending, Header:=xlYes
+
+    '移除重複
+    H = [A1].End(xlDown).Row
+    ActiveSheet.Range("$A$1:$AI$" & H).RemoveDuplicates Columns:=2, Header:=xlYes
+    
+End Sub
