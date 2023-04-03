@@ -1,0 +1,68 @@
+Sub WA02_B()
+Dim WA02_B, WA02_pi As Worksheet
+Dim WA02R As Integer, WA02F As String
+    
+Set WA = Sheets("WA02_B")
+Set Pi = Sheets("Pivot")
+
+    WA02R = WA.Cells(Rows.Count, 2).End(xlUp).Row
+    'WA.Range("A:A").Insert 'CopyOrigin:=xlFormatFromRightOrBelow(插入已不需要)
+    
+    'CleanHistory
+    For i = 1 To WA02R
+        WA.Cells(i, 1).ClearContents
+    Next
+    WA.Cells(1, 1).Value = "ERS No"
+    
+    'Identify FLASH or DRAM
+    For j = 2 To WA02R
+        WA02F = Mid(WA.Cells(j, 8), 3, 1)
+        If WA.Cells(j, 6) Like "*" & "ENGPKG" & "*" And WA02F = "G" Then
+            WA.Cells(j, 1).Value = "FLASH"
+        ElseIf WA.Cells(j, 6) Like "*" & "ENGPKG" & "*" Then
+            WA.Cells(j, 1).Value = "DRAM"
+        End If
+    Next
+    
+    'Auto Refresh the Pivot (WA02)
+    Pi.PivotTables("WA02").PivotCache.Refresh
+    Pi.PivotTables("WA02").PivotFields("ERS No").CurrentPage = "FLASH"
+    Pi.PivotTables("WA02").PivotFields("SubPurpose").CurrentPage = "ENGPKG"
+'End Sub
+'----------------------------------------------------------------------------------------------------------
+'Sub ERS_64G4()
+Dim E6 As Worksheet
+Dim E6R As Integer, E6F As String
+    
+Set E6 = Sheets("64G4")
+    E6R = E6.Cells(Rows.Count, 3).End(xlUp).Row
+    
+    '(清理已不需要)
+    'For i = 1 To E6R
+        'E6.Cells(i, 1).ClearContents
+        'E6.Cells(i, 2).ClearContents
+    'Next
+    
+    'Identify FLASH or DRAM
+    E6.Cells(1, 1).Value = "CO_TYPE"
+    E6.Cells(1, 2).Value = "V_RAM"
+    E6.Cells(2, 1).Formula = "= Left(AK2, 2)"
+    E6.Cells(2, 2).Formula = "= IF(MID(AO2,3,1) = ""G"",""FLASH"",""DRAM"")"
+    
+    'AutoFill
+    With Range(E6.Cells(2, 1), E6.Cells(2, 2))
+        .AutoFill Destination:=E6.Range("A2:B" & E6R)
+    End With
+    
+    'Auto Refresh the Pivot (64G4)
+    Pi.PivotTables("64G4").PivotCache.Refresh
+    'Auto Filter the Pivot (64G4)
+    With Pi.PivotTables("64G4").PivotFields("smcs_no")
+        .PivotItems("NA").Visible = False
+        Pi.PivotTables("64G4").PivotFields("CO_TYPE").CurrentPage = "OE"
+        Pi.PivotTables("64G4").PivotFields("V_RAM").CurrentPage = "FLASH"
+        Pi.PivotTables("64G4").PivotFields("橫式 OEM PURPOSE").PivotFilters.Add _
+        Type:=xlCaptionContains, Value1:="ENGPKG"
+    End With
+
+End Sub
