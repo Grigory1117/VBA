@@ -1,0 +1,36 @@
+Public Sub ymd()
+
+Dim UsedR As Integer
+Dim Xymda As String
+Dim D As Worksheet
+Set D = Sheets("67D")
+
+    UsedR = D.Cells(Rows.Count, 1).End(xlUp).Row
+    MsgBox "ROW:" & UsedR
+    
+    Xymda = Application.InputBox("請輸入起算日YYYYMMDD：", Type:=1)
+    Xymdb = Application.InputBox("請輸入結算日YYYYMMDD：", Type:=1)
+
+    'HL 不在本期&多個日期
+    For i = 2 To UsedR
+        If D.Cells(i, 21).Value < Xymda Or D.Cells(i, 21).Value > Xymdb Then
+            D.Range(Cells(i, 1), Cells(i, 26)).Interior.Color = RGB(217, 217, 217)
+        End If
+    Next
+    
+    'unHL 多個日期
+    For i = 1 To UsedR
+        If D.Cells(i, 21) Like ";" & "*" Then
+            D.Range(Cells(i, 1), Cells(i, 26)).Interior.Color = xlNone
+        End If
+    Next
+    
+    'HL CP3E_0
+    For i = 1 To UsedR
+        If D.Cells(i, 12) Like "CP3E_0" Then
+            D.Range(Cells(i, 1), Cells(i, 26)).Interior.Color = RGB(253, 253, 217)
+        End If
+    Next
+    'Selection.AutoFilter Field:=12, Operator:=xlFilterNoFill
+
+End Sub
