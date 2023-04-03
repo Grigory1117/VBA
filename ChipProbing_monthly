@@ -1,0 +1,71 @@
+Public Sub UnitPrice()
+
+Dim UsedR As Integer
+Dim Xyym, X5377, X9850R, X5833, X5830 As String
+Dim D As Worksheet
+
+Set D = Sheets("67D")
+    UsedR = D.Cells(Rows.Count, 1).End(xlUp).Row
+    MsgBox "ROW:" & UsedR
+
+    Xyym = Application.InputBox("請輸入上月YYYYMM：", Type:=1)
+    Xymda = Application.InputBox("請輸入起算日YYYYMMDD：", Type:=1)
+    Xymdb = Application.InputBox("請輸入結算日YYYYMMDD：", Type:=1)
+    X5377 = Application.InputBox("請輸入上月T5377：", Type:=1)
+    X9850R = Application.InputBox("請輸入上月ESI_9850R：", Type:=1)
+    X5833 = Application.InputBox("請輸入上月T5833：", Type:=1)
+    X5830 = Application.InputBox("請輸入上月T5830：", Type:=1)
+
+    For i = 1 To UsedR
+    '調整上期單價
+        If D.Cells(i, 21) Like Xyym & "*" And D.Cells(i, 17).Value = "T5377" Then
+            D.Cells(i, 24).Value = X5377
+        ElseIf D.Cells(i, 21) Like Xyym & "*" And D.Cells(i, 17).Value = "ESI_9850IR" Then
+            D.Cells(i, 24).Value = X9850R
+        ElseIf D.Cells(i, 21) Like Xyym & "*" And D.Cells(i, 17).Value = "T5833" Then
+            D.Cells(i, 24).Value = X5833
+        ElseIf D.Cells(i, 21) Like Xyym & "*" And D.Cells(i, 17).Value = "T5830" Then
+            D.Cells(i, 24).Value = X5830
+        End If
+    Next
+
+    D.Cells(2, 25).Formula = "=ROUND(RC[-1]/3600*RC[-9],2)"
+    D.Cells(2, 26).Formula = "=ROUND(RC[-1]*RC[-12],2)"
+
+    D.Range(Cells(2, 25), Cells(2, 26)).Select
+    Selection.AutoFill Destination:=D.Range(Cells(2, 25), Cells(UsedR, 26)), Type:=xlFillDefault
+    D.Columns("Y:Z").Select
+    Selection.Style = "Comma"
+
+
+    'HL 不在本期&多個日期
+    For i = 2 To UsedR
+        If D.Cells(i, 21).Value < Xymda Or D.Cells(i, 21).Value > Xymdb Then
+            D.Range(Cells(i, 1), Cells(i, 26)).Interior.Color = RGB(217, 217, 217)
+        End If
+    Next
+
+    'unHL 多個日期
+    For i = 1 To UsedR
+        If D.Cells(i, 21) Like ";" & "*" Then
+            D.Range(Cells(i, 1), Cells(i, 26)).Interior.Color = xlNone
+        End If
+    Next
+
+    'HL CP3E_0
+    For i = 1 To UsedR
+        If D.Cells(i, 12) Like "CP3E_0" Then
+            D.Range(Cells(i, 1), Cells(i, 26)).Interior.Color = RGB(253, 253, 217)
+        End If
+    Next
+
+    '非本期 & CP3E_0歸0
+    For i = 2 To UsedR
+        If D.Cells(i, 26).Interior.Color = RGB(217, 217, 217) _
+        Or D.Cells(i, 26).Interior.Color = RGB(253, 253, 217) Then
+            Cells(i, 26).Value = 0
+        End If
+    Next
+
+    'Selection.AutoFilter Field:=12, Operator:=xlFilterNoFill
+End Sub
