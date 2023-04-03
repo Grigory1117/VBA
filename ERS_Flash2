@@ -1,0 +1,68 @@
+Sub ERS()
+Dim VSC, ERS As Worksheet
+Dim R1, R2 As Integer
+
+Set VSC = Sheets("VSC")
+Set ERS = Sheets("ERS")
+
+    R1 = ERS.Cells(Rows.Count, 7).End(xlUp).Row
+    
+    'CleanHistory
+    For i = 2 To R1
+        ERS.Rows(i).ClearContents
+    Next
+    
+    'Copy the Data
+    VSC.Range("A:B").Copy Destination:=ERS.Range("G:H")
+    VSC.Range("C:D").Copy Destination:=ERS.Range("L:M")
+    VSC.Range("L:L").Copy Destination:=ERS.Range("N:N")
+    VSC.Range("E:E").Copy Destination:=ERS.Range("O:O")
+    VSC.Range("G:G").Copy Destination:=ERS.Range("P:P")
+    VSC.Range("H:H").Copy Destination:=ERS.Range("R:R")
+    VSC.Range("O:O").Copy Destination:=ERS.Range("S:S")
+    VSC.Range("P:P").Copy Destination:=ERS.Range("V:V")
+    VSC.Range("N:N").Copy Destination:=ERS.Range("X:X")
+    VSC.Range("Q:Q").Copy Destination:=ERS.Range("Y:Y")
+    VSC.Range("S:AA").Copy Destination:=ERS.Range("AH:AP")
+    VSC.Range("AS:AS").Copy Destination:=ERS.Range("AQ:AQ")
+    
+    'Match the Data
+    R2 = ERS.Cells(Rows.Count, 7).End(xlUp).Row
+    ERS.Cells(2, 4).Formula = "=INDEX('64G4'!F:F,MATCH(ERS!$M:$M,'64G4'!$L:$L,0))"
+    ERS.Cells(2, 5).Formula = "=INDEX('64G4'!G:G,MATCH(ERS!$M:$M,'64G4'!$L:$L,0))"
+    ERS.Cells(2, 6).Formula = "=INDEX('64G4'!AL:AL,MATCH(ERS!$M:$M,'64G4'!$L:$L,0))"
+    With ERS.Range(Cells(2, 4), Cells(2, 6))
+        .AutoFill Destination:=ERS.Range("D2:F" & R2)
+    End With
+    
+    ERS.Cells(2, 17).Formula = "=INDEX('64G4'!N:N,MATCH(ERS!$M:$M,'64G4'!$L:$L,0))"
+    With ERS.Cells(2, 17)
+        .AutoFill Destination:=ERS.Range("Q2:Q" & R2)
+    End With
+    
+    'Formula
+    ERS.Cells(2, 26).Formula = "=Y2"
+    ERS.Cells(2, 30).Formula = "=IF(T2>AC2,T2,AC2)"
+    ERS.Cells(2, 32).Formula = "=ROUND(AE2/(3600*AA2/(AB2+AD2)),2)"
+    ERS.Cells(2, 33).Formula = "=ROUND(AF2*Z2,0)"
+    With ERS.Range(Cells(2, 26), Cells(2, 33))
+        .AutoFill Destination:=ERS.Range("Z2:AG" & R2)
+    End With
+    
+    'Identify and Delete EQC Rows
+    For i = 2 To R2
+    ERS.Cells(i, 9).Value = "竹北"
+        If ERS.Cells(i, 14).Value Like "EQC" & "*" Then
+            ERS.Range(Cells(i, 1), Cells(i, 43)).Interior.Color = RGB(217, 217, 217)
+        End If
+    Next
+    
+    For i = R2 To 2 Step -1
+        If ERS.Cells(i, 4).Interior.Color = RGB(217, 217, 217) Then
+            ERS.Cells(i, 4).EntireRow.Delete
+        End If
+    Next
+
+    'Delete #N/A Rows
+    Columns("D").SpecialCells(xlFormulas, xlErrors).EntireRow.Delete
+End Sub
