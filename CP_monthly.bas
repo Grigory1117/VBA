@@ -1,3 +1,4 @@
+Attribute VB_Name = "CP_monthly"
 Public Sub UnitPrice()
 
 Dim UsedR As Integer
