@@ -1,3 +1,4 @@
+Attribute VB_Name = "WE_UnitPrice"
 Public Sub UnitPrice()
 
 Dim UsedR As Integer
