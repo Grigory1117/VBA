@@ -1,3 +1,4 @@
+Attribute VB_Name = "EFR67_64"
 Public Sub T64G4()
 
 Dim R1, R2 As Integer
