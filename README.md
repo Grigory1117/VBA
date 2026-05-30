@@ -46,7 +46,7 @@ Through this project, I demonstrated:
 This code has been de-identified and is for portfolio display purposes only.
 
 ## Author
-[GREG]
+Greg You
 
 
 # Excel VBA Automation Tool
@@ -97,4 +97,4 @@ VBA (Visual Basic for Applications)
 此程式碼已進行去識別化處理，僅作為作品集展示用途。
 
 ## 作者
-[GREG]
+Greg You
