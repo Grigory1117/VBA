@@ -1,3 +1,4 @@
+Attribute VB_Name = "ERS_Flash2"
 Sub ERS()
 Dim VSC, ERS As Worksheet
 Dim R1, R2 As Integer
