@@ -1,3 +1,4 @@
+Attribute VB_Name = "CP_payment"
 Public Sub Price()
 
 Dim UsedR As Integer
