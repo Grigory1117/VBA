@@ -1,3 +1,4 @@
+Attribute VB_Name = "CP_weekly"
 Public Sub ymd()
 
 Dim UsedR As Integer
