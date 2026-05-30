@@ -17,7 +17,6 @@ Note: This project has been de-identified. Company names and personal informatio
 | VBA / VBA Automation | Excel automation, macro development |
 | Excel Object Model | Workbook, Worksheet, Range manipulation |
 | Data Processing | Data cleaning, filtering, formatting |
-| User Interface | Custom buttons, UserForm design |
 
 ## Key Features
 - Automatically clean and format data
@@ -68,7 +67,6 @@ Greg You
 | VBA / VBA Automation | Excel 自動化、巨集開發 |
 | Excel Object Model | Workbook、Worksheet、Range 操作 |
 | 數據處理 | 數據整理、篩選、格式化 |
-| 使用者介面 | 自訂按鈕、表單設計 |
 
 ## 主要功能
 - 自動整理數據並格式化
