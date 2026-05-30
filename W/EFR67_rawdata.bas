@@ -1,3 +1,4 @@
+Attribute VB_Name = "EFR67_rawdata"
 Sub Rawdata_E67()
 Dim RD, WB As Worksheet
 Dim R1, R2 As Integer
