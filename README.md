@@ -8,7 +8,7 @@ Note: This project has been de-identified. Company names and personal informatio
 ## Project Background
 - Problem: Manually processing large amounts of data daily, time-consuming and error-prone
 - Solution: Built an automated workflow using VBA, completed with one click
-- Result: Reduced processing time by 60%+
+- Result: Reduced processing time by 80%+
 
 ## Technical Skills
 
@@ -58,7 +58,7 @@ Greg You
 ## 專案背景
 - 問題：每天需要手動處理大量數據，耗時且容易出錯
 - 解決方案：使用 VBA 建立自動化流程，一鍵完成
-- 成果：減少 60% 以上處理時間
+- 成果：減少 80% 以上處理時間
 
 ## 技術重點
 
