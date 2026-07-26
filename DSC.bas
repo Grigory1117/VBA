@@ -496,7 +496,7 @@ Sub ProcessAexampleR7WithDownload(serialNo As String, IE As Object, row As Objec
     End If
 End Sub
 
-' ========== 新增：自動處理 IE 下載對話框 ==========
+' ========== 自動處理 IE 下載對話框 ==========
 Function DownloadFileAutoClick(IE As Object, row As Object, downloadFolder As String, expectedFileName As String) As Boolean
     On Error Resume Next
     
@@ -668,103 +668,6 @@ Function DownloadFileAutoClick(IE As Object, row As Object, downloadFolder As St
         DownloadFileAutoClick = fileDownloaded
     Else
         DownloadFileAutoClick = True
-    End If
-    
-    On Error GoTo 0
-End Function
-
-Function DownloadFileFromRow(IE As Object, row As Object, downloadFolder As String, expectedFileName As String) As Boolean
-    On Error Resume Next
-    
-    Debug.Print "========== 開始下載 =========="
-    
-    Dim Cells As Object
-    Set Cells = row.getElementsByTagName("td")
-    
-    Dim downloadCell As Object
-    Set downloadCell = Cells(Cells.Length - 2)
-    
-    Dim buttons As Object
-    Set buttons = downloadCell.getElementsByTagName("button")
-    
-    Debug.Print "  找到 " & buttons.Length & " 個按鈕"
-    
-    Dim downloadBtn As Object
-    Dim i As Long
-    
-    For i = buttons.Length - 1 To 0 Step -1
-        If InStr(buttons(i).innerText, "下載原始檔") > 0 Then
-            Set downloadBtn = buttons(i)
-            Debug.Print "找到「下載原始檔」按鈕"
-            Exit For
-        End If
-    Next i
-    
-    If downloadBtn Is Nothing Then
-        For i = buttons.Length - 1 To 0 Step -1
-            If buttons(i).Style.display <> "none" Then
-                Set downloadBtn = buttons(i)
-                Debug.Print "  找到最後一個可見按鈕: " & buttons(i).innerText
-                Exit For
-            End If
-        Next i
-    End If
-    
-    If downloadBtn Is Nothing Then
-        Debug.Print "找不到下載按鈕"
-        DownloadFileFromRow = False
-        Exit Function
-    End If
-    
-    Dim fileExistedBefore As Boolean
-    Dim oldFileTime As Date
-    
-    fileExistedBefore = (Dir(downloadFolder & expectedFileName) <> "")
-    If fileExistedBefore Then
-        oldFileTime = FileDateTime(downloadFolder & expectedFileName)
-    End If
-    
-    Debug.Print "  點擊下載按鈕..."
-    downloadBtn.Click
-    
-    Application.Wait Now + timeValue("00:00:02")
-    
-    Dim waitCount As Integer
-    Dim fileDownloaded As Boolean
-    waitCount = 0
-    fileDownloaded = False
-    
-    Debug.Print "  等待下載完成..."
-    
-    Do While waitCount < 30
-        Application.Wait Now + timeValue("00:00:01")
-        waitCount = waitCount + 1
-        
-        If Dir(downloadFolder & expectedFileName) <> "" Then
-            Dim currentFileTime As Date
-            currentFileTime = FileDateTime(downloadFolder & expectedFileName)
-            
-            If Not fileExistedBefore Or currentFileTime > oldFileTime Then
-                Application.Wait Now + timeValue("00:00:02")
-                
-                If FileLen(downloadFolder & expectedFileName) > 0 Then
-                    fileDownloaded = True
-                    Debug.Print "檔案已下載（等待 " & waitCount & " 秒）"
-                    Exit Do
-                End If
-            End If
-        End If
-        
-        If waitCount Mod 5 = 0 Then
-            Debug.Print "  等待中... (" & waitCount & " 秒)"
-        End If
-    Loop
-    
-    If Not fileDownloaded Then
-        Debug.Print "下載逾時（等待超過60秒）"
-        DownloadFileFromRow = False
-    Else
-        DownloadFileFromRow = True
     End If
     
     On Error GoTo 0
